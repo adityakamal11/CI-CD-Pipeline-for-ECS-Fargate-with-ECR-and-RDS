@@ -3,8 +3,4 @@ node_modules/
 dist/
 .env
 coverage/
-
-# Ignore SSH keys
 .ssh/
-.ssh/id_rsa
-.ssh/id_rsa.pub
