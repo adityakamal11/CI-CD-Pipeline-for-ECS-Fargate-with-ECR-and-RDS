@@ -7,6 +7,8 @@ phases:
       - npm install
   pre_build:
     commands:
+      - echo "Logging into Docker Hub"
+      - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
       - echo "Logging into Amazon ECR"
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
@@ -18,6 +20,9 @@ phases:
     commands:
       - echo "Pushing Docker image to ECR"
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/fargate-app:latest
+      - echo "Creating imagedefinitions.json file..."
+      - echo '[{"name":"fargate-app","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/fargate-app:latest'"}]' > imagedefinitions.json
+
 artifacts:
   files:
-    - "**/*"
+    - imagedefinitions.json
