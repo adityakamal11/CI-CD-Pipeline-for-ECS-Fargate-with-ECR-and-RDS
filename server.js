@@ -17,9 +17,9 @@ db.connect((err) => {
 });
 
 app.get('/', (req, res) => {
-    res.send('App running on ECS Fargate with RDS!');
+    res.send('Today Date is 03rd Jan 2025 <br> App running on ECS Fargate with RDS!');
 });
 
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
+app.listen(80, () => {
+    console.log('Server running on port 80');
 });
