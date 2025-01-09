@@ -17,7 +17,7 @@ db.connect((err) => {
 });
 
 app.get('/', (req, res) => {
-    res.send('Today Date is 03rd Jan 2025 <br> App running on ECS Fargate with RDS!');
+    res.send(' App running on ECS Fargate with RDS!');
 });
 
 app.listen(80, () => {
