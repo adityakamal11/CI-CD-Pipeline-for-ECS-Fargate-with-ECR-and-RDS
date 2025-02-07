@@ -15,3 +15,60 @@ Basic knowledge of Docker, Node.js, and AWS Services.
 In this step, we will create a simple Node.js application and Dockerize it.
 
 1.1. Create a Node.js Application
+```
+mkdir fargate-app
+cd fargate-app
+npm init -y
+npm install express mysql
+```
+1.2. Application Code
+Create a server.js file with the following code:
+```
+const express = require('express');
+const mysql = require('mysql');
+const app = express();
+
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
+});
+
+db.connect((err) => {
+    if (err) {
+        throw err;
+    }
+    console.log('Connected to database');
+});
+
+app.get('/', (req, res) => {
+    res.send('App running on ECS Fargate with RDS!');
+});
+
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
+});
+```
+1.3. Create Dockerfile
+```
+touch Dockerfile
+```
+Add the following contents to the Dockerfile:
+```
+FROM node:14
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+1.4. Build Docker Image Locally
+```
+docker build -t fargate-app .
+```
+Test the application locally by running:
+```
+docker run -p 3000:3000 fargate-app
+```
