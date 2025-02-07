@@ -170,7 +170,7 @@ Set up the Source Stage with your GitHub repository.
 Add a Build Stage using AWS CodeBuild.
 Add a Deploy Stage to update your ECS Fargate service with the new image.
 ```
-#Step 6: Testing the Deployment
+# Step 6: Testing the Deployment
 
 6.1. Push Code to GitHub
 Commit and push the code changes to GitHub:
