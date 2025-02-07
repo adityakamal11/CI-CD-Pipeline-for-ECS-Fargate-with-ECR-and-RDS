@@ -129,3 +129,68 @@ Go to ECS Cluster > Create Service.
 Choose the task definition created earlier.
 Configure the service with desired tasks, load balancers, and VPC settings.
 ```
+# Step 5: Creating a CI/CD Pipeline Using CodePipeline
+We’ll now automate the deployment process using AWS CodePipeline.
+
+5.1. Create an IAM Role for CodePipeline
+```
+Ensure your pipeline has the necessary permissions to interact with ECS, ECR, and CodeBuild.
+```
+5.2. BuildSpec for CodeBuild
+Create a buildspec.yml file in the root of your repository to define build instructions:
+```
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies"
+      - npm install
+  pre_build:
+    commands:
+      - echo "Logging into Amazon ECR"
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - echo "Building Docker image"
+      - docker build -t fargate-app .
+      - docker tag fargate-app:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/fargate-app:latest
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR"
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/fargate-app:latest
+artifacts:
+  files:
+    - "**/*"
+```
+5.3. Creating the Pipeline
+```
+Go to CodePipeline > Create Pipeline.
+Set up the Source Stage with your GitHub repository.
+Add a Build Stage using AWS CodeBuild.
+Add a Deploy Stage to update your ECS Fargate service with the new image.
+```
+#Step 6: Testing the Deployment
+
+6.1. Push Code to GitHub
+Commit and push the code changes to GitHub:
+```
+git add .
+git commit -m "Initial commit for ECS Fargate app"
+git push origin main
+```
+6.2. Verify Pipeline Execution
+Once the code is pushed, the CodePipeline will be triggered, building the Docker image, pushing it to ECR, and deploying it to ECS Fargate.
+
+# Monitoring and Logging with CloudWatch
+7.1. ECS Fargate Logging
+AWS Fargate integrates with CloudWatch Logs, allowing you to monitor application logs directly. Check the logs by going to **CloudWatch** > Logs.
+
+7.2. Set up CloudWatch Alarms
+```
+Go to CloudWatch Console > Alarms.
+Create alarms for CPU, memory usage, or log error patterns to ensure proper monitoring.
+```
+
+# Conclusion
+In this project, you’ve built a complete DevOps pipeline on AWS, deploying a Dockerized Node.js application using ECS Fargate, RDS, and ECR. You’ve also automated the deployment process using CodePipeline and CodeBuild, integrating robust monitoring via CloudWatch. This setup is scalable, resilient, and adheres to modern DevOps practices.
